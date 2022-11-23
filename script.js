@@ -12,7 +12,37 @@ const dummyTransactions = [
     { id: 3, text: "test3", amount: 100}
 ];
 
-let transaction = dummyTransactions;
+let transactions = dummyTransactions;
+
+function addTransaction(e){
+    e.preventDefault();
+
+    if(text.value.trim() === '' || amount.value.trim() === ''){
+        alert('Pless add text and amount');
+    }
+    else{
+        const transaction = {
+            id: generateID(),
+            text: text.value,
+            amount: +amount.value
+        };
+
+        transactions.push(transaction);
+
+        addTransactionDOM(transaction);
+
+        updateValues();
+
+        text.value = '';
+        amount.value = '';
+
+        // console.log(transaction);
+    }
+}
+
+function generateID(){
+    return Math.floor(Math.random() * 100000000);
+}
 
 function addTransactionDOM(transaction){
     const sign = transaction.amount < 0 ? '-' : '+';
@@ -23,14 +53,14 @@ function addTransactionDOM(transaction){
 
     item.innerHTML = `
     ${transaction.text} <span> ${sign}${Math.abs(transaction.amount)} 
-    </span> <button class="delete-btn">x</button>
+    </span> <button class="delete-btn" onclick='removeTransaction(${transaction.id})'>x</button>
     `;
 
     list.appendChild(item);
 }
 
 function updateValues() {
-    const amounts = transaction.map(transaction => transaction.amount);
+    const amounts = transactions.map(transaction => transaction.amount);
 
         const total = amounts.reduce((acc, item) => (acc += item), 0).toFixed(2);
 
@@ -48,11 +78,19 @@ function updateValues() {
         // console.log(expense);
 }
 
+function removeTransaction(id){
+    transactions = transactions.filter(transaction => transaction.id !== id);
+
+    init();
+} 
+
 function init(){
     list.innerHTML = '';
 
-    transaction.forEach(addTransactionDOM);
+    transactions.forEach(addTransactionDOM);
     updateValues();
 }
 
 init();
+
+form.addEventListener('submit',addTransaction);
